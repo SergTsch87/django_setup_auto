@@ -32,6 +32,28 @@ def run_command(command, cwd=None):
         sys.exit(1)
 
 
+def ensure_django_admin_installed():
+    run_command("pip install pipx")
+    run_command("pipx install django || echo 'django already installed with pipx'")
+
+
+def ensure_project_created():
+    manage_py_path = os.path.join(BASE_DIR, "manage.py")
+    if os.path.exists(manage_py_path):
+        print("⚠️  manage.py вже існує. Пропускаємо створення Django-проєкту.")
+        return
+    run_command(f'django-admin startproject {PROJECT_NAME} {TARGET_FOLDER}')
+
+
+def ensure_venv_created():
+    venv_path = os.path.join(BASE_DIR, PROJECT_NAME, VENV_NAME)
+    if not os.path.exists(venv_path):
+        run_command(f'py -m venv {VENV_NAME}', cwd=os.path.join(BASE_DIR, PROJECT_NAME))
+    else:
+        print("⚠️  Віртуальне середовище вже існує. Пропускаємо створення.")
+    return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
+
+
 def main():
     pass
 
