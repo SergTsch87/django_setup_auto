@@ -54,6 +54,19 @@ def ensure_venv_created():
     return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
 
 
+def install_django_in_venv(pip_path):
+    run_command(f'"{pip_path}" install django')
+
+
+def ensure_app_created(python_path):
+    app_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP)
+    if os.path.exists(app_path):
+        print(f"⚠️  Django-застосунок '{CREATE_APP}' вже існує. Пропускаємо створення.")
+        return
+    manage_py = os.path.join(BASE_DIR, "manage.py")
+    run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
+
+
 def main():
     pass
 
