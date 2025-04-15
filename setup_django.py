@@ -68,7 +68,15 @@ def ensure_app_created(python_path):
 
 
 def main():
-    pass
+    ensure_django_admin_installed()   # Встановлює pipx та django
+    ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
+    pip_path, python_path = ensure_venv_created()  # Створює venv
+    install_django_in_venv(pip_path)
+    ensure_app_created(python_path)   # Створює Django-застосунок. Інакше - минає цей етап
+    print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
+
+    # додай можливість одразу створити шаблони, view, route або підключити Bootstrap
+
 
 
 if __name__ == '__main__':
