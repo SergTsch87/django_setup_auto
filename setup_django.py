@@ -81,6 +81,49 @@ def ensure_template_dir_created():
     run_command(f'mkdir {template_path}; type nul > {BASE_TEMPLATE_FILE}; type nul > {EXTEND_TEMPLATE_FILE}; echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
 
 
+def append_to_cbv_py():
+    content_view = f"""
+    # with templates
+    # # Class-Based View (CBV):
+    from django.views.generic import TemplateView
+
+
+    class HomeView(TemplateView):
+        template_name = '{CREATE_APP}/{EXTEND_TEMPLATE_FILE}'
+    """
+    run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
+
+
+# Дописує route до списку urlpatterns файлу prj/urls.py
+def append_to_urls_py_cbv():
+    content_urls_with_cbv = """
+    # with templates
+    # # Class-Based View (CBV):
+    from tutors_app.views import HomeView
+
+
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('', HomeView.as_view(), name='home'),
+    ]
+    """
+    run_command(f'echo {content_urls_with_cbv} > {PROJECT_NAME}/urls.py')
+
+
+# Створює app/urls.py з відповідним вмістом
+def create_urls_py_app_cbv():
+    run_command(f'type nul > {CREATE_APP}/urls.py')
+    content_urls_app_cbv = """
+    from django.urls import path
+    from . import views
+
+    urlpatterns = [
+        path('', views.home, name='home'),
+    ]
+    """
+    run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
+
+
 def main():
     ensure_django_admin_installed()   # Встановлює pipx та django
     ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
@@ -89,9 +132,11 @@ def main():
     ensure_app_created(python_path)   # Створює Django-застосунок. Інакше - минає цей етап
     print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
 
-    # додай можливість одразу створити шаблони, view, route або підклю7чити Bootstrap
+    # додай можливість одразу створити шаблони, view, route або підключити Bootstrap
     ensure_template_dir_created()         # Створює Django-шаблон з кількома HTML-файлами. Інакше - минає цей етап
-
+    append_to_cbv_py()                    # Дописує CBV-функцію до view
+    append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
+    create_urls_py_app_cbv()              # Створює app/urls.py з відповідним вмістом
 
 
 if __name__ == '__main__':
