@@ -1,8 +1,8 @@
 import os
 import sys
 import subprocess
-import platform
-from  pathlib import Path
+# import platform
+# from  pathlib import Path
 
 
 # # ------------------------------------
@@ -20,6 +20,8 @@ CREATE_APP = "tutors_app"   # Change it!
 VENV_NAME = ".venv"
 TARGET_FOLDER = "."         # Current dir
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_TEMPLATE_FILE = 'base.html'   # parent template
+EXTEND_TEMPLATE_FILE = 'extend.html'   # with extend template from base.html
 
 
 def run_command(command, cwd=None):
@@ -60,11 +62,23 @@ def install_django_in_venv(pip_path):
 
 def ensure_app_created(python_path):
     app_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP)
+    # !!! Але ж, папка Застосунку знаходиться Поряд з папкою Проєкту, - то ж, чи не буде правильним таке?:
+    # app_path = os.path.join(BASE_DIR, CREATE_APP)
     if os.path.exists(app_path):
         print(f"⚠️  Django-застосунок '{CREATE_APP}' вже існує. Пропускаємо створення.")
         return
     manage_py = os.path.join(BASE_DIR, "manage.py")
     run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
+
+
+def ensure_template_dir_created():
+    template_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
+    if os.path.exists(template_path):
+        print(f"⚠️  Django-шаблон templates/'{CREATE_APP}' вже існує. Пропускаємо створення.")
+        return
+    # manage_py = os.path.join(BASE_DIR, "manage.py")
+    extend_template = '{% extends "base.html" %}'
+    run_command(f'mkdir {template_path}; type nul > {BASE_TEMPLATE_FILE}; type nul > {EXTEND_TEMPLATE_FILE}; echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
 
 
 def main():
@@ -75,7 +89,8 @@ def main():
     ensure_app_created(python_path)   # Створює Django-застосунок. Інакше - минає цей етап
     print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
 
-    # додай можливість одразу створити шаблони, view, route або підключити Bootstrap
+    # додай можливість одразу створити шаблони, view, route або підклю7чити Bootstrap
+    ensure_template_dir_created()         # Створює Django-шаблон з кількома HTML-файлами. Інакше - минає цей етап
 
 
 
