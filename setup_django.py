@@ -56,8 +56,9 @@ def ensure_venv_created():
     return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
 
 
-def install_django_in_venv(pip_path):
+def install_django_and_bootstrap_in_venv(pip_path):
     run_command(f'"{pip_path}" install django')
+    run_command(f'"{pip_path}" install django-bootstrap-v5')
 
 
 def ensure_app_created(python_path):
@@ -69,6 +70,8 @@ def ensure_app_created(python_path):
         return
     manage_py = os.path.join(BASE_DIR, "manage.py")
     run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
+    run_command(f'echo "INSTALLED_APPS += \'{CREATE_APP},\'" >> {PROJECT_NAME}/settings.py')
+    run_command(f'echo "INSTALLED_APPS += \'bootstrap5,\'" >> {PROJECT_NAME}/settings.py')
 
 
 def ensure_template_dir_created():
@@ -128,11 +131,11 @@ def main():
     ensure_django_admin_installed()   # Встановлює pipx та django
     ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
     pip_path, python_path = ensure_venv_created()  # Створює venv
-    install_django_in_venv(pip_path)
+    install_django_and_bootstrap_in_venv(pip_path)
     ensure_app_created(python_path)   # Створює Django-застосунок. Інакше - минає цей етап
     print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
 
-    # додай можливість одразу створити шаблони, view, route або підключити Bootstrap
+    # + додай можливість одразу створити шаблони, view, route або підключити Bootstrap
     ensure_template_dir_created()         # Створює Django-шаблон з кількома HTML-файлами. Інакше - минає цей етап
     append_to_cbv_py()                    # Дописує CBV-функцію до view
     append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
