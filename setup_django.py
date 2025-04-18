@@ -63,15 +63,13 @@ def install_django_and_bootstrap_in_venv(pip_path):
 
 def ensure_app_created(python_path):
     app_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP)
-    # !!! Але ж, папка Застосунку знаходиться Поряд з папкою Проєкту, - то ж, чи не буде правильним таке?:
-    # app_path = os.path.join(BASE_DIR, CREATE_APP)
     if os.path.exists(app_path):
         print(f"⚠️  Django-застосунок '{CREATE_APP}' вже існує. Пропускаємо створення.")
         return
     manage_py = os.path.join(BASE_DIR, "manage.py")
     run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
-    run_command(f'echo "INSTALLED_APPS += \'{CREATE_APP},\'" >> {PROJECT_NAME}/settings.py')
-    run_command(f'echo "INSTALLED_APPS += \'bootstrap5,\'" >> {PROJECT_NAME}/settings.py')
+    run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
+    run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
 
 
 def ensure_template_dir_created():
@@ -80,9 +78,19 @@ def ensure_template_dir_created():
         print(f"⚠️  Django-шаблон templates/'{CREATE_APP}' вже існує. Пропускаємо створення.")
         return
     # manage_py = os.path.join(BASE_DIR, "manage.py")
+    
+    # run_command(f'mkdir {template_path}')
+    os.makedirs(template_path, exist_ok=True)
+    
+    # run_command(f'type nul > {BASE_TEMPLATE_FILE}')
+    with open(BASE_TEMPLATE_FILE, 'w'): pass
+    
+    # run_command(f'type nul > {EXTEND_TEMPLATE_FILE}')
+    # run_command(f'echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
     extend_template = '{% extends "base.html" %}'
-    run_command(f'mkdir {template_path}; type nul > {BASE_TEMPLATE_FILE}; type nul > {EXTEND_TEMPLATE_FILE}; echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
-
+    with open(EXTEND_TEMPLATE_FILE, 'w') as f:
+        f.write(extend_template)
+    
 
 def append_to_cbv_py():
     content_view = f"""
