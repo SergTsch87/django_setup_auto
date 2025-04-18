@@ -19,7 +19,11 @@ PROJECT_NAME = "my_prj"     # Change it!
 CREATE_APP = "tutors_app"   # Change it!
 VENV_NAME = ".venv"
 TARGET_FOLDER = "."         # Current dir
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+dir_django = os.path.abspath('./root_prj/')
+BASE_DIR = os.path.join(dir_django, PROJECT_NAME)
+# BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 BASE_TEMPLATE_FILE = 'base.html'   # parent template
 EXTEND_TEMPLATE_FILE = 'extend.html'   # with extend template from base.html
 
@@ -59,7 +63,8 @@ def ensure_project_created():
     if os.path.exists(manage_py_path):
         print("⚠️  manage.py вже існує. Пропускаємо створення Django-проєкту.")
         return
-    run_command(f'django-admin startproject {PROJECT_NAME} {TARGET_FOLDER}')
+    run_command(f'django-admin startproject {PROJECT_NAME}', cwd=dir_django)
+    # run_command(f'django-admin startproject {PROJECT_NAME} {TARGET_FOLDER}')
 
 
 def ensure_venv_created():
@@ -154,6 +159,7 @@ def create_urls_py_app_cbv():
 
 
 def main():
+    os.makedirs(dir_django, exist_ok=True)
     ensure_django_admin_installed()   # Встановлює pipx та django
     ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
     pip_path, python_path = ensure_venv_created()  # Створює venv
