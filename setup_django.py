@@ -34,6 +34,21 @@ def run_command(command, cwd=None):
         sys.exit(1)
 
 
+def write_content_to_file(path_file, content, mode='a'):
+    with open(path_file, mode) as f:  # mode == 'w' or 'a'
+        f.write(content)
+
+
+def write_to_gitignore():
+    content = """
+*.txt
+my_prj/
+tutors_app/
+"""
+    with open('.gitignore', 'a') as f:
+        f.write(content)
+
+
 def ensure_django_admin_installed():
     run_command("pip install pipx")
     run_command("pipx install django || echo 'django already installed with pipx'")
@@ -68,8 +83,10 @@ def ensure_app_created(python_path):
         return
     manage_py = os.path.join(BASE_DIR, "manage.py")
     run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
-    run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
-    run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
+    
+    # run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
+    # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
+    write_content_to_file(f'{PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
 
 
 def ensure_template_dir_created():
@@ -83,7 +100,8 @@ def ensure_template_dir_created():
     os.makedirs(template_path, exist_ok=True)
     
     # run_command(f'type nul > {BASE_TEMPLATE_FILE}')
-    with open(BASE_TEMPLATE_FILE, 'w'): pass
+    with open(BASE_TEMPLATE_FILE, 'w'):
+        pass
     
     # run_command(f'type nul > {EXTEND_TEMPLATE_FILE}')
     # run_command(f'echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
@@ -148,6 +166,8 @@ def main():
     append_to_cbv_py()                    # Дописує CBV-функцію до view
     append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
     create_urls_py_app_cbv()              # Створює app/urls.py з відповідним вмістом
+
+    # write_to_gitignore()                  # Розкоментуй, коли тре буде пушити Django-проєкт
 
 
 if __name__ == '__main__':
