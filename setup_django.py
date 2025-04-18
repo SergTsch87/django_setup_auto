@@ -27,6 +27,50 @@ BASE_DIR = os.path.join(dir_django, PROJECT_NAME)
 BASE_TEMPLATE_FILE = 'base.html'   # parent template
 EXTEND_TEMPLATE_FILE = 'extend.html'   # with extend template from base.html
 
+content_for_base_templ_file = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>{% block title %}My amazing site{% endblock %}</title>
+</head>
+
+<body>
+    <div id="sidebar">
+        {% block sidebar %}
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog/">Blog</a></li>
+        </ul>
+        {% endblock %}
+    </div>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+"""
+
+content_for_extend_templ_file = """
+{% extends "base.html" %}
+
+{% block title %}{{ section.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ section.title }}</h1>
+
+{% for story in story_list %}
+<h2>
+  <a href="{{ story.get_absolute_url }}">
+    {{ story.headline|upper }}
+  </a>
+</h2>
+<p>{{ story.tease|truncatewords:"100" }}</p>
+{% endfor %}
+{% endblock %}
+"""
+
 
 def run_command(command, cwd=None):
     try:
@@ -103,16 +147,17 @@ def ensure_template_dir_created():
     
     # run_command(f'mkdir {template_path}')
     os.makedirs(template_path, exist_ok=True)
+
+
+def ensure_template_file_created(path_file, content):
+    with open(path_file, 'w') as f:
+        f.write(content)
+    # with open(BASE_TEMPLATE_FILE, 'w'):   # Створює порожній файл
+    #     pass
     
-    # run_command(f'type nul > {BASE_TEMPLATE_FILE}')
-    with open(BASE_TEMPLATE_FILE, 'w'):
-        pass
-    
-    # run_command(f'type nul > {EXTEND_TEMPLATE_FILE}')
-    # run_command(f'echo "{extend_template}" > {EXTEND_TEMPLATE_FILE}')
-    extend_template = '{% extends "base.html" %}'
-    with open(EXTEND_TEMPLATE_FILE, 'w') as f:
-        f.write(extend_template)
+    # extend_template = '{% extends "base.html" %}'
+    # with open(EXTEND_TEMPLATE_FILE, 'w') as f:
+    #     f.write(extend_template)
     
 
 def append_to_cbv_py():
@@ -168,7 +213,12 @@ def main():
     print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
 
     # + додай можливість одразу створити шаблони, view, route або підключити Bootstrap
-    ensure_template_dir_created()         # Створює Django-шаблон з кількома HTML-файлами. Інакше - минає цей етап
+    ensure_template_dir_created()         # Створює Django-шаблон. Інакше - минає цей етап
+    
+    # Створює HTML-файл Django-шаблону зі шляхом path_file та вмістом content
+    ensure_template_file_created(BASE_TEMPLATE_FILE, content_for_base_templ_file)
+    ensure_template_file_created(EXTEND_TEMPLATE_FILE, content_for_extend_templ_file)
+    
     append_to_cbv_py()                    # Дописує CBV-функцію до view
     append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
     create_urls_py_app_cbv()              # Створює app/urls.py з відповідним вмістом
