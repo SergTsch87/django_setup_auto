@@ -15,6 +15,8 @@ import subprocess
 #     return path.is_file()
 # # --------------------------------------
 
+# !!! Мо, константи краще винести до иншого файлу?..
+
 PROJECT_NAME = "my_prj"     # Change it!
 CREATE_APP = "tutors_app"   # Change it!
 VENV_NAME = ".venv"
@@ -89,10 +91,10 @@ def write_content_to_file(path_file, content, mode='a'):
 
 def write_to_gitignore():
     content = """
-*.txt
-my_prj/
-tutors_app/
-"""
+    *.txt
+    my_prj/
+    tutors_app/
+    """
     with open('.gitignore', 'a') as f:
         f.write(content)
 
@@ -161,16 +163,21 @@ def ensure_template_file_created(path_file, content):
     
 
 def append_to_cbv_py():
-    content_view = f"""
+    views_path = os.path.join(BASE_DIR, CREATE_APP, 'views.py')
+    content = f"""
     # with templates
-    # # Class-Based View (CBV):
+    # Class-Based View (CBV):
     from django.views.generic import TemplateView
 
 
     class HomeView(TemplateView):
         template_name = '{CREATE_APP}/{EXTEND_TEMPLATE_FILE}'
     """
-    run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
+
+    with open(views_path, 'a') as f:
+        f.write(content)
+    print(f"✅ CBV додано до {views_path}")
+    # run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
 
 
 # Дописує route до списку urlpatterns файлу prj/urls.py
