@@ -198,16 +198,26 @@ def append_to_urls_py_cbv():
 
 # Створює app/urls.py з відповідним вмістом
 def create_urls_py_app_cbv():
-    run_command(f'type nul > {CREATE_APP}/urls.py')
+    # run_command(f'type nul > {CREATE_APP}/urls.py')
     content_urls_app_cbv = """
+    # For CBV
     from django.urls import path
-    from . import views
+    from django.views.generic import TemplateView
 
     urlpatterns = [
-        path('', views.home, name='home'),
+        path("extend/", TemplateView.as_view(template_name="extend.html")),
     ]
+
+    # For FCV
+    # from django.urls import path
+    # from . import views
+
+    # urlpatterns = [
+    #     path('', views.home, name='home'),
+    # ]
     """
-    run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
+    write_content_to_file(f'{CREATE_APP}/urls.py', content_urls_app_cbv, mode='a')
+    # run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
 
 
 def main():
