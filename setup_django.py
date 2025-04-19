@@ -14,16 +14,16 @@ import subprocess
 # def is_file(path: Path) -> bool:
 #     return path.is_file()
 # # --------------------------------------
-
-# !!! Мо, константи краще винести до иншого файлу?..
+# ========= CONSTANTS ========= 
+# !!! Мо, константи краще винести до иншого файлу?.. Як саме це краще зробити?
 
 PROJECT_NAME = "my_prj"     # Change it!
 CREATE_APP = "tutors_app"   # Change it!
 VENV_NAME = ".venv"
 TARGET_FOLDER = "."         # Current dir
 
-dir_django = os.path.abspath('./root_prj/')
-BASE_DIR = os.path.join(dir_django, PROJECT_NAME)
+DIR_DJANGO = os.path.abspath('./root_prj/')
+BASE_DIR = os.path.join(DIR_DJANGO, PROJECT_NAME)
 # BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 BASE_TEMPLATE_FILE = 'base.html'   # parent template
@@ -73,7 +73,7 @@ content_for_extend_templ_file = """
 {% endblock %}
 """
 
-
+# ================= CMD, OS, GIT =====================
 def run_command(command, cwd=None):
     try:
         print(f'-> {command}')
@@ -83,7 +83,7 @@ def run_command(command, cwd=None):
         print(f"   Код завершення: {e.returncode}")
         sys.exit(1)
 
-
+    # --------------------- А чи не зробити декоратор з цих двох ф-цій?.. -------------------
 def write_content_to_file(path_file, content, mode='a'):
     with open(path_file, mode) as f:  # mode == 'w' or 'a'
         f.write(content)
@@ -99,6 +99,7 @@ def write_to_gitignore():
         f.write(content)
 
 
+# ================= DJANGO_and_VENV_CONF =====================
 def ensure_django_admin_installed():
     run_command("pip install pipx")
     run_command("pipx install django || echo 'django already installed with pipx'")
@@ -109,8 +110,13 @@ def ensure_project_created():
     if os.path.exists(manage_py_path):
         print("⚠️  manage.py вже існує. Пропускаємо створення Django-проєкту.")
         return
-    run_command(f'django-admin startproject {PROJECT_NAME}', cwd=dir_django)
+    run_command(f'django-admin startproject {PROJECT_NAME}', cwd=DIR_DJANGO)
     # run_command(f'django-admin startproject {PROJECT_NAME} {TARGET_FOLDER}')
+
+
+def install_django_and_bootstrap_in_venv(pip_path):
+    run_command(f'"{pip_path}" install django')
+    run_command(f'"{pip_path}" install django-bootstrap-v5')
 
 
 def ensure_venv_created():
@@ -119,14 +125,13 @@ def ensure_venv_created():
         run_command(f'py -m venv {VENV_NAME}', cwd=os.path.join(BASE_DIR, PROJECT_NAME))
     else:
         print("⚠️  Віртуальне середовище вже існує. Пропускаємо створення.")
-    return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
+    return os.path.join(venv_path, "Scripts", "pip.exe")
+    
+    # А тут, мабуть, помилка:
+    # return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
 
 
-def install_django_and_bootstrap_in_venv(pip_path):
-    run_command(f'"{pip_path}" install django')
-    run_command(f'"{pip_path}" install django-bootstrap-v5')
-
-
+# ================= APP =====================
 def ensure_app_created(python_path):
     app_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP)
     if os.path.exists(app_path):
@@ -134,26 +139,33 @@ def ensure_app_created(python_path):
         return
     manage_py = os.path.join(BASE_DIR, "manage.py")
     run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
-    
+
+
+def get_num_line_with_text():
     # run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
     # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
     # write_content_to_file(f'{PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
-    num_temp = 0
+    # num_temp = 0
     with open(f'{PROJECT_NAME}/settings.py', 'r') as file:
         lines = file.readlines()
         for num_line, line in enumerate(lines, 1):
             if 'INSTALLED_APPS' in line:
-                num_temp = num_line
+                # num_temp = num_line
+                return num_line
 
+
+def write_text_by_num_line():
+    num_line_text = get_num_line_with_text()
     with open(f'{PROJECT_NAME}/settings.py', 'a') as file:
         lines = file.writelines()
         for num_line, line in enumerate(lines, 1):
-            if num_line == num_temp:
+            if num_line == num_line_text:
                 line += f"\n'{CREATE_APP}',\n'bootstrap5',\n"
         # f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
         # f.write(content)
 
 
+# ================= TEMPLATE =====================
 def ensure_template_dir_created():
     template_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
     if os.path.exists(template_path):
@@ -176,6 +188,7 @@ def ensure_template_file_created(path_file, content):
     #     f.write(extend_template)
     
 
+# ================= VIEWS =====================
 def append_to_cbv_py():
     views_path = os.path.join(BASE_DIR, CREATE_APP, 'views.py')
     content = f"""
@@ -194,6 +207,7 @@ def append_to_cbv_py():
     # run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
 
 
+# ================= URLS =====================
 # Створює app/urls.py з відповідним вмістом
 def create_urls_py_app_cbv():
     content_urls_with_cbv = """
@@ -232,13 +246,15 @@ def append_to_urls_py_cbv():
     # run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
 
 
+# ================= MAIN =====================
 def main():
-    os.makedirs(dir_django, exist_ok=True)
+    os.makedirs(DIR_DJANGO, exist_ok=True)
     ensure_django_admin_installed()   # Встановлює pipx та django
     ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
     pip_path, python_path = ensure_venv_created()  # Створює venv
     install_django_and_bootstrap_in_venv(pip_path)
     ensure_app_created(python_path)   # Створює Django-застосунок. Інакше - минає цей етап
+    write_text_by_num_line()
     print("\n✅ Готово! Django-проєкт і застосунок створено успішно.")
 
     # + додай можливість одразу створити шаблони, view, route або підключити Bootstrap
