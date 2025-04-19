@@ -137,7 +137,21 @@ def ensure_app_created(python_path):
     
     # run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
     # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
-    write_content_to_file(f'{PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
+    # write_content_to_file(f'{PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
+    num_temp = 0
+    with open(f'{PROJECT_NAME}/settings.py', 'r') as file:
+        lines = file.readlines()
+        for num_line, line in enumerate(lines, 1):
+            if 'INSTALLED_APPS' in line:
+                num_temp = num_line
+
+    with open(f'{PROJECT_NAME}/settings.py', 'a') as file:
+        lines = file.writelines()
+        for num_line, line in enumerate(lines, 1):
+            if num_line == num_temp:
+                line += f"\n'{CREATE_APP}',\n'bootstrap5',\n"
+        # f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
+        # f.write(content)
 
 
 def ensure_template_dir_created():
@@ -171,7 +185,7 @@ def append_to_cbv_py():
 
 
     class HomeView(TemplateView):
-        template_name = '{CREATE_APP}/{EXTEND_TEMPLATE_FILE}'
+        template_name = '{EXTEND_TEMPLATE_FILE}'
     """
 
     with open(views_path, 'a') as f:
@@ -180,43 +194,41 @@ def append_to_cbv_py():
     # run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
 
 
-# Дописує route до списку urlpatterns файлу prj/urls.py
-def append_to_urls_py_cbv():
+# Створює app/urls.py з відповідним вмістом
+def create_urls_py_app_cbv():
     content_urls_with_cbv = """
     # with templates
     # # Class-Based View (CBV):
-    from tutors_app.views import HomeView
+    # from tutors_app.views import HomeView
+    from django.urls import path
+    from .views import HomeView
 
 
     urlpatterns = [
-        path('admin/', admin.site.urls),
         path('', HomeView.as_view(), name='home'),
     ]
     """
-    run_command(f'echo {content_urls_with_cbv} > {PROJECT_NAME}/urls.py')
+    
+    write_content_to_file(f'{CREATE_APP}/urls.py', content_urls_with_cbv, mode='a')
+    # run_command(f'echo {content_urls_with_cbv} > {PROJECT_NAME}/urls.py')
 
 
-# Створює app/urls.py з відповідним вмістом
-def create_urls_py_app_cbv():
+# Дописує route до списку urlpatterns файлу prj/urls.py
+def append_to_urls_py_cbv():
     # run_command(f'type nul > {CREATE_APP}/urls.py')
-    content_urls_app_cbv = """
+    content_urls_prj_cbv = f"""
     # For CBV
-    from django.urls import path
-    from django.views.generic import TemplateView
+    from django.contrib import admin
+    from django.urls import path, include
+    # from django.views.generic import TemplateView
 
     urlpatterns = [
-        path("extend/", TemplateView.as_view(template_name="extend.html")),
+        path('admin/', admin.site.urls),
+        path('', include({CREATE_APP}.urls)),   # app.urls
+        # path("extend/", TemplateView.as_view(template_name="extend.html")),
     ]
-
-    # For FCV
-    # from django.urls import path
-    # from . import views
-
-    # urlpatterns = [
-    #     path('', views.home, name='home'),
-    # ]
     """
-    write_content_to_file(f'{CREATE_APP}/urls.py', content_urls_app_cbv, mode='a')
+    write_content_to_file(f'{PROJECT_NAME}/urls.py', content_urls_prj_cbv, mode='a')
     # run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
 
 
