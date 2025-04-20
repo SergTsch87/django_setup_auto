@@ -19,7 +19,7 @@ import sys
 def run_command(command, cwd=None):
     try:
         print(f'-> {command}')
-        subprocess.run(command, shell=True, cwd=cwd, check=True)
+        subprocess.run(command, shell=True, cwd=cwd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Помилка при виконанні команди: {command}")
         print(f"   Код завершення: {e.returncode}")
