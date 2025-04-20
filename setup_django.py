@@ -125,10 +125,8 @@ def ensure_venv_created():
         run_command(f'py -m venv {VENV_NAME}', cwd=os.path.join(BASE_DIR, PROJECT_NAME))
     else:
         print("⚠️  Віртуальне середовище вже існує. Пропускаємо створення.")
-    return os.path.join(venv_path, "Scripts", "pip.exe")
     
-    # А тут, мабуть, помилка:
-    # return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
+    return os.path.join(venv_path, "Scripts", "pip.exe"), os.path.join(venv_path, "Scripts", "python.exe")
 
 
 # ================= APP =====================
@@ -156,11 +154,20 @@ def get_num_line_with_text():
 
 def write_text_by_num_line():
     num_line_text = get_num_line_with_text()
-    with open(f'{PROJECT_NAME}/settings.py', 'a') as file:
-        lines = file.writelines()
-        for num_line, line in enumerate(lines, 1):
-            if num_line == num_line_text:
-                line += f"\n'{CREATE_APP}',\n'bootstrap5',\n"
+    with open(f'{PROJECT_NAME}/settings.py', 'r') as file:
+        lines = file.readlines()
+
+    if num_line_text is not None:
+        lines.insert(num_line_text, f"    '{CREATE_APP}',\n    'bootstrap5',\n")
+
+    with open(f'{PROJECT_NAME}/settings.py', 'w') as file:
+        file.writelines(lines)
+
+    # Хіба це ефективно, - перезаписувати увесь файл?..
+
+
+        # for num_line, line in enumerate(lines, 1):
+        #     line += f"\n'{CREATE_APP}',\n'bootstrap5',\n"
         # f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
         # f.write(content)
 
@@ -260,7 +267,7 @@ def main():
     # + додай можливість одразу створити шаблони, view, route або підключити Bootstrap
     ensure_template_dir_created()         # Створює Django-шаблон. Інакше - минає цей етап
     
-    # Створює HTML-файл Django-шаблону зі шляхом path_file та вмістом content
+    # Створює HTML-файли Django-шаблону зі шляхом path_file та вмістом content
     ensure_template_file_created(BASE_TEMPLATE_FILE, content_for_base_templ_file)
     ensure_template_file_created(EXTEND_TEMPLATE_FILE, content_for_extend_templ_file)
     
