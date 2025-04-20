@@ -2,7 +2,14 @@ import os
 import sys
 import subprocess
 import constants as cnst
+import utils as utls
 
+# utils:
+# utls.run_command
+# utls.write_content_to_file
+# utls.write_to_gitignore
+
+# constants:
 # cnst.PROJECT_NAME
 # cnst.CREATE_APP
 # cnst.VENV_NAME
@@ -17,8 +24,8 @@ import constants as cnst
 
 # ================= DJANGO_and_VENV_CONF =====================
 def ensure_django_admin_installed():
-    run_command("pip install pipx")
-    run_command("pipx install django || echo 'django already installed with pipx'")
+    utls.run_command("pip install pipx")
+    utls.run_command("pipx install django || echo 'django already installed with pipx'")
 
 
 def ensure_project_created():
@@ -26,19 +33,19 @@ def ensure_project_created():
     if os.path.exists(manage_py_path):
         print("⚠️  manage.py вже існує. Пропускаємо створення Django-проєкту.")
         return
-    run_command(f'django-admin startproject {cnst.PROJECT_NAME}', cwd=cnst.DIR_DJANGO)
-    # run_command(f'django-admin startproject {cnst.PROJECT_NAME} {cnst.TARGET_FOLDER}')
+    utls.run_command(f'django-admin startproject {cnst.PROJECT_NAME}', cwd=cnst.DIR_DJANGO)
+    # utls.run_command(f'django-admin startproject {cnst.PROJECT_NAME} {cnst.TARGET_FOLDER}')
 
 
 def install_django_and_bootstrap_in_venv(pip_path):
-    run_command(f'"{pip_path}" install django')
-    run_command(f'"{pip_path}" install django-bootstrap-v5')
+    utls.run_command(f'"{pip_path}" install django')
+    utls.run_command(f'"{pip_path}" install django-bootstrap-v5')
 
 
 def ensure_venv_created():
     venv_path = os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME, cnst.VENV_NAME)
     if not os.path.exists(venv_path):
-        run_command(f'py -m venv {cnst.VENV_NAME}', cwd=os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME))
+        utls.run_command(f'py -m venv {cnst.VENV_NAME}', cwd=os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME))
     else:
         print("⚠️  Віртуальне середовище вже існує. Пропускаємо створення.")
     
@@ -52,13 +59,13 @@ def ensure_app_created(python_path):
         print(f"⚠️  Django-застосунок '{cnst.CREATE_APP}' вже існує. Пропускаємо створення.")
         return
     manage_py = os.path.join(cnst.BASE_DIR, "manage.py")
-    run_command(f'"{python_path}" "{manage_py}" startapp {cnst.CREATE_APP}', cwd=cnst.BASE_DIR)
+    utls.run_command(f'"{python_path}" "{manage_py}" startapp {cnst.CREATE_APP}', cwd=cnst.BASE_DIR)
 
 
 def get_num_line_with_text():
-    # run_command(f'echo INSTALLED_APPS += \'{cnst.CREATE_APP},\' >> {cnst.PROJECT_NAME}/settings.py')
-    # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {cnst.PROJECT_NAME}/settings.py')
-    # write_content_to_file(f'{cnst.PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{cnst.CREATE_APP}, bootstrap5]')
+    # utls.run_command(f'echo INSTALLED_APPS += \'{cnst.CREATE_APP},\' >> {cnst.PROJECT_NAME}/settings.py')
+    # utls.run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {cnst.PROJECT_NAME}/settings.py')
+    # utls.write_content_to_file(f'{cnst.PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{cnst.CREATE_APP}, bootstrap5]')
     # num_temp = 0
     with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
         lines = file.readlines()
@@ -96,7 +103,7 @@ def ensure_template_dir_created():
         return
     # manage_py = os.path.join(cnst.BASE_DIR, "manage.py")
     
-    # run_command(f'mkdir {template_path}')
+    # utls.run_command(f'mkdir {template_path}')
     os.makedirs(template_path, exist_ok=True)
 
 
@@ -127,7 +134,7 @@ def append_to_cbv_py():
     with open(views_path, 'a') as f:
         f.write(content)
     print(f"✅ CBV додано до {views_path}")
-    # run_command(f'echo {content_view} >> {cnst.CREATE_APP}/views.py')
+    # utls.run_command(f'echo {content_view} >> {cnst.CREATE_APP}/views.py')
 
 
 # ================= URLS =====================
@@ -146,13 +153,13 @@ def create_urls_py_app_cbv():
     ]
     """
     
-    write_content_to_file(f'{cnst.CREATE_APP}/urls.py', content_urls_with_cbv, mode='a')
-    # run_command(f'echo {content_urls_with_cbv} > {cnst.PROJECT_NAME}/urls.py')
+    utls.write_content_to_file(f'{cnst.CREATE_APP}/urls.py', content_urls_with_cbv, mode='a')
+    # utls.run_command(f'echo {content_urls_with_cbv} > {cnst.PROJECT_NAME}/urls.py')
 
 
 # Дописує route до списку urlpatterns файлу prj/urls.py
 def append_to_urls_py_cbv():
-    # run_command(f'type nul > {cnst.CREATE_APP}/urls.py')
+    # utls.run_command(f'type nul > {cnst.CREATE_APP}/urls.py')
     content_urls_prj_cbv = f"""
     # For CBV
     from django.contrib import admin
@@ -165,8 +172,8 @@ def append_to_urls_py_cbv():
         # path("extend/", TemplateView.as_view(template_name="extend.html")),
     ]
     """
-    write_content_to_file(f'{cnst.PROJECT_NAME}/urls.py', content_urls_prj_cbv, mode='a')
-    # run_command(f'echo {content_urls_app_cbv} > {cnst.CREATE_APP}/urls.py')
+    utls.write_content_to_file(f'{cnst.PROJECT_NAME}/urls.py', content_urls_prj_cbv, mode='a')
+    # utls.run_command(f'echo {content_urls_app_cbv} > {cnst.CREATE_APP}/urls.py')
 
 
 # ================= MAIN =====================
@@ -191,7 +198,7 @@ def main():
     append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
     create_urls_py_app_cbv()              # Створює app/urls.py з відповідним вмістом
 
-    # write_to_gitignore()                  # Розкоментуй, коли тре буде пушити Django-проєкт
+    # utls.write_to_gitignore()                  # Розкоментуй, коли тре буде пушити Django-проєкт
 
 
 if __name__ == '__main__':

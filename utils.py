@@ -40,4 +40,3 @@ def write_to_gitignore():
     """
     with open('.gitignore', 'a') as f:
         f.write(content)
-
