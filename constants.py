@@ -1,5 +1,6 @@
 # ========= CONSTANTS ========= 
-# !!! Мо, константи краще винести до иншого файлу?.. Як саме це краще зробити?
+import os
+
 
 PROJECT_NAME = "my_prj"     # Change it!
 CREATE_APP = "tutors_app"   # Change it!
