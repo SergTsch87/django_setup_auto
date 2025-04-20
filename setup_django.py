@@ -1,6 +1,19 @@
 import os
 import sys
 import subprocess
+import constants as cnst
+
+# cnst.PROJECT_NAME
+# cnst.CREATE_APP
+# cnst.VENV_NAME
+# cnst.TARGET_FOLDER
+# cnst.DIR_DJANGO
+# cnst.BASE_DIR
+# cnst.BASE_TEMPLATE_FILE
+# cnst.EXTEND_TEMPLATE_FILE
+# cnst.content_for_base_templ_file
+# cnst.content_for_extend_templ_file
+
 # import platform
 # from  pathlib import Path
 
@@ -14,66 +27,9 @@ import subprocess
 # def is_file(path: Path) -> bool:
 #     return path.is_file()
 # # --------------------------------------
-# ========= CONSTANTS ========= 
-# !!! Мо, константи краще винести до иншого файлу?.. Як саме це краще зробити?
 
-PROJECT_NAME = "my_prj"     # Change it!
-CREATE_APP = "tutors_app"   # Change it!
-VENV_NAME = ".venv"
-TARGET_FOLDER = "."         # Current dir
 
-DIR_DJANGO = os.path.abspath('./root_prj/')
-BASE_DIR = os.path.join(DIR_DJANGO, PROJECT_NAME)
-# BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-BASE_TEMPLATE_FILE = 'base.html'   # parent template
-EXTEND_TEMPLATE_FILE = 'extend.html'   # with extend template from base.html
-
-content_for_base_templ_file = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="style.css">
-    <title>{% block title %}My amazing site{% endblock %}</title>
-</head>
-
-<body>
-    <div id="sidebar">
-        {% block sidebar %}
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/blog/">Blog</a></li>
-        </ul>
-        {% endblock %}
-    </div>
-
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
-</body>
-</html>
-"""
-
-content_for_extend_templ_file = """
-{% extends "base.html" %}
-
-{% block title %}{{ section.title }}{% endblock %}
-
-{% block content %}
-<h1>{{ section.title }}</h1>
-
-{% for story in story_list %}
-<h2>
-  <a href="{{ story.get_absolute_url }}">
-    {{ story.headline|upper }}
-  </a>
-</h2>
-<p>{{ story.tease|truncatewords:"100" }}</p>
-{% endfor %}
-{% endblock %}
-"""
-
-# ================= CMD, OS, GIT =====================
+# # ================= CMD, OS, GIT =====================
 def run_command(command, cwd=None):
     try:
         print(f'-> {command}')
@@ -90,6 +46,7 @@ def write_content_to_file(path_file, content, mode='a'):
 
 
 def write_to_gitignore():
+    # Файл .gitignore — краще перевірити, чи рядки вже не існують, щоб уникнути дублювання.
     content = """
     *.txt
     my_prj/
@@ -106,12 +63,12 @@ def ensure_django_admin_installed():
 
 
 def ensure_project_created():
-    manage_py_path = os.path.join(BASE_DIR, "manage.py")
+    manage_py_path = os.path.join(cnst.BASE_DIR, "manage.py")
     if os.path.exists(manage_py_path):
         print("⚠️  manage.py вже існує. Пропускаємо створення Django-проєкту.")
         return
-    run_command(f'django-admin startproject {PROJECT_NAME}', cwd=DIR_DJANGO)
-    # run_command(f'django-admin startproject {PROJECT_NAME} {TARGET_FOLDER}')
+    run_command(f'django-admin startproject {cnst.PROJECT_NAME}', cwd=cnst.DIR_DJANGO)
+    # run_command(f'django-admin startproject {cnst.PROJECT_NAME} {cnst.TARGET_FOLDER}')
 
 
 def install_django_and_bootstrap_in_venv(pip_path):
@@ -120,9 +77,9 @@ def install_django_and_bootstrap_in_venv(pip_path):
 
 
 def ensure_venv_created():
-    venv_path = os.path.join(BASE_DIR, PROJECT_NAME, VENV_NAME)
+    venv_path = os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME, cnst.VENV_NAME)
     if not os.path.exists(venv_path):
-        run_command(f'py -m venv {VENV_NAME}', cwd=os.path.join(BASE_DIR, PROJECT_NAME))
+        run_command(f'py -m venv {cnst.VENV_NAME}', cwd=os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME))
     else:
         print("⚠️  Віртуальне середовище вже існує. Пропускаємо створення.")
     
@@ -131,20 +88,20 @@ def ensure_venv_created():
 
 # ================= APP =====================
 def ensure_app_created(python_path):
-    app_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP)
+    app_path = os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME, cnst.CREATE_APP)
     if os.path.exists(app_path):
-        print(f"⚠️  Django-застосунок '{CREATE_APP}' вже існує. Пропускаємо створення.")
+        print(f"⚠️  Django-застосунок '{cnst.CREATE_APP}' вже існує. Пропускаємо створення.")
         return
-    manage_py = os.path.join(BASE_DIR, "manage.py")
-    run_command(f'"{python_path}" "{manage_py}" startapp {CREATE_APP}', cwd=BASE_DIR)
+    manage_py = os.path.join(cnst.BASE_DIR, "manage.py")
+    run_command(f'"{python_path}" "{manage_py}" startapp {cnst.CREATE_APP}', cwd=cnst.BASE_DIR)
 
 
 def get_num_line_with_text():
-    # run_command(f'echo INSTALLED_APPS += \'{CREATE_APP},\' >> {PROJECT_NAME}/settings.py')
-    # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {PROJECT_NAME}/settings.py')
-    # write_content_to_file(f'{PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
+    # run_command(f'echo INSTALLED_APPS += \'{cnst.CREATE_APP},\' >> {cnst.PROJECT_NAME}/settings.py')
+    # run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {cnst.PROJECT_NAME}/settings.py')
+    # write_content_to_file(f'{cnst.PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{cnst.CREATE_APP}, bootstrap5]')
     # num_temp = 0
-    with open(f'{PROJECT_NAME}/settings.py', 'r') as file:
+    with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
         lines = file.readlines()
         for num_line, line in enumerate(lines, 1):
             if 'INSTALLED_APPS' in line:
@@ -154,31 +111,31 @@ def get_num_line_with_text():
 
 def write_text_by_num_line():
     num_line_text = get_num_line_with_text()
-    with open(f'{PROJECT_NAME}/settings.py', 'r') as file:
+    with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
         lines = file.readlines()
 
     if num_line_text is not None:
-        lines.insert(num_line_text, f"    '{CREATE_APP}',\n    'bootstrap5',\n")
+        lines.insert(num_line_text, f"    '{cnst.CREATE_APP}',\n    'bootstrap5',\n")
 
-    with open(f'{PROJECT_NAME}/settings.py', 'w') as file:
+    with open(f'{cnst.PROJECT_NAME}/settings.py', 'w') as file:
         file.writelines(lines)
 
     # Хіба це ефективно, - перезаписувати увесь файл?..
 
 
         # for num_line, line in enumerate(lines, 1):
-        #     line += f"\n'{CREATE_APP}',\n'bootstrap5',\n"
-        # f'INSTALLED_APPS += [{CREATE_APP}, bootstrap5]')
+        #     line += f"\n'{cnst.CREATE_APP}',\n'bootstrap5',\n"
+        # f'INSTALLED_APPS += [{cnst.CREATE_APP}, bootstrap5]')
         # f.write(content)
 
 
 # ================= TEMPLATE =====================
 def ensure_template_dir_created():
-    template_path = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
+    template_path = os.path.join(cnst.BASE_DIR, cnst.PROJECT_NAME, cnst.CREATE_APP, 'templates', cnst.CREATE_APP)
     if os.path.exists(template_path):
-        print(f"⚠️  Django-шаблон templates/'{CREATE_APP}' вже існує. Пропускаємо створення.")
+        print(f"⚠️  Django-шаблон templates/'{cnst.CREATE_APP}' вже існує. Пропускаємо створення.")
         return
-    # manage_py = os.path.join(BASE_DIR, "manage.py")
+    # manage_py = os.path.join(cnst.BASE_DIR, "manage.py")
     
     # run_command(f'mkdir {template_path}')
     os.makedirs(template_path, exist_ok=True)
@@ -187,17 +144,17 @@ def ensure_template_dir_created():
 def ensure_template_file_created(path_file, content):
     with open(path_file, 'w') as f:
         f.write(content)
-    # with open(BASE_TEMPLATE_FILE, 'w'):   # Створює порожній файл
+    # with open(cnst.BASE_TEMPLATE_FILE, 'w'):   # Створює порожній файл
     #     pass
     
     # extend_template = '{% extends "base.html" %}'
-    # with open(EXTEND_TEMPLATE_FILE, 'w') as f:
+    # with open(cnst.EXTEND_TEMPLATE_FILE, 'w') as f:
     #     f.write(extend_template)
     
 
 # ================= VIEWS =====================
 def append_to_cbv_py():
-    views_path = os.path.join(BASE_DIR, CREATE_APP, 'views.py')
+    views_path = os.path.join(cnst.BASE_DIR, cnst.CREATE_APP, 'views.py')
     content = f"""
     # with templates
     # Class-Based View (CBV):
@@ -205,13 +162,13 @@ def append_to_cbv_py():
 
 
     class HomeView(TemplateView):
-        template_name = '{EXTEND_TEMPLATE_FILE}'
+        template_name = '{cnst.EXTEND_TEMPLATE_FILE}'
     """
 
     with open(views_path, 'a') as f:
         f.write(content)
     print(f"✅ CBV додано до {views_path}")
-    # run_command(f'echo {content_view} >> {CREATE_APP}/views.py')
+    # run_command(f'echo {content_view} >> {cnst.CREATE_APP}/views.py')
 
 
 # ================= URLS =====================
@@ -230,13 +187,13 @@ def create_urls_py_app_cbv():
     ]
     """
     
-    write_content_to_file(f'{CREATE_APP}/urls.py', content_urls_with_cbv, mode='a')
-    # run_command(f'echo {content_urls_with_cbv} > {PROJECT_NAME}/urls.py')
+    write_content_to_file(f'{cnst.CREATE_APP}/urls.py', content_urls_with_cbv, mode='a')
+    # run_command(f'echo {content_urls_with_cbv} > {cnst.PROJECT_NAME}/urls.py')
 
 
 # Дописує route до списку urlpatterns файлу prj/urls.py
 def append_to_urls_py_cbv():
-    # run_command(f'type nul > {CREATE_APP}/urls.py')
+    # run_command(f'type nul > {cnst.CREATE_APP}/urls.py')
     content_urls_prj_cbv = f"""
     # For CBV
     from django.contrib import admin
@@ -245,17 +202,17 @@ def append_to_urls_py_cbv():
 
     urlpatterns = [
         path('admin/', admin.site.urls),
-        path('', include({CREATE_APP}.urls)),   # app.urls
+        path('', include({cnst.CREATE_APP}.urls)),   # app.urls
         # path("extend/", TemplateView.as_view(template_name="extend.html")),
     ]
     """
-    write_content_to_file(f'{PROJECT_NAME}/urls.py', content_urls_prj_cbv, mode='a')
-    # run_command(f'echo {content_urls_app_cbv} > {CREATE_APP}/urls.py')
+    write_content_to_file(f'{cnst.PROJECT_NAME}/urls.py', content_urls_prj_cbv, mode='a')
+    # run_command(f'echo {content_urls_app_cbv} > {cnst.CREATE_APP}/urls.py')
 
 
 # ================= MAIN =====================
 def main():
-    os.makedirs(DIR_DJANGO, exist_ok=True)
+    os.makedirs(cnst.DIR_DJANGO, exist_ok=True)
     ensure_django_admin_installed()   # Встановлює pipx та django
     ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
     pip_path, python_path = ensure_venv_created()  # Створює venv
@@ -268,8 +225,8 @@ def main():
     ensure_template_dir_created()         # Створює Django-шаблон. Інакше - минає цей етап
     
     # Створює HTML-файли Django-шаблону зі шляхом path_file та вмістом content
-    ensure_template_file_created(BASE_TEMPLATE_FILE, content_for_base_templ_file)
-    ensure_template_file_created(EXTEND_TEMPLATE_FILE, content_for_extend_templ_file)
+    ensure_template_file_created(cnst.BASE_TEMPLATE_FILE, cnst.content_for_base_templ_file)
+    ensure_template_file_created(cnst.EXTEND_TEMPLATE_FILE, cnst.content_for_extend_templ_file)
     
     append_to_cbv_py()                    # Дописує CBV-функцію до view
     append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
