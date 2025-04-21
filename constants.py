@@ -11,8 +11,9 @@ DIR_DJANGO = os.path.abspath('./root_prj/')
 BASE_DIR = os.path.join(DIR_DJANGO, PROJECT_NAME)
 # BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-BASE_TEMPLATE_FILE = 'base.html'   # parent template
-EXTEND_TEMPLATE_FILE = 'extend.html'   # with extend template from base.html
+TEMPLATE_PATH = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
+BASE_TEMPLATE_FILE = os.path.join(TEMPLATE_PATH, 'base.html')   # parent template
+EXTEND_TEMPLATE_FILE = os.path.join(TEMPLATE_PATH, 'extend.html')   # with extend template from base.html
 
 content_for_base_templ_file = """
 <!DOCTYPE html>
