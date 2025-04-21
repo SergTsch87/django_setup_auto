@@ -11,7 +11,8 @@ DIR_DJANGO = os.path.abspath('./root_prj/')
 BASE_DIR = os.path.join(DIR_DJANGO, PROJECT_NAME)
 # BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-TEMPLATE_PATH = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
+# TEMPLATE_PATH = os.path.join(BASE_DIR, PROJECT_NAME, CREATE_APP, 'templates', CREATE_APP)
+TEMPLATE_PATH = os.path.join(BASE_DIR, CREATE_APP, 'templates', CREATE_APP)
 BASE_TEMPLATE_FILE = os.path.join(TEMPLATE_PATH, 'base.html')   # parent template
 EXTEND_TEMPLATE_FILE = os.path.join(TEMPLATE_PATH, 'extend.html')   # with extend template from base.html
 
@@ -57,4 +58,30 @@ content_for_extend_templ_file = """
 <p>{{ story.tease|truncatewords:"100" }}</p>
 {% endfor %}
 {% endblock %}
+"""
+
+content_urls_app_with_cbv = """
+# with templates
+# # Class-Based View (CBV):
+# from tutors_app.views import HomeView
+from django.urls import path
+from .views import HomeView
+
+
+urlpatterns = [
+    path('', HomeView.as_view(), name='home'),
+]
+"""
+
+content_urls_prj_cbv = f"""
+# For CBV
+from django.contrib import admin
+from django.urls import path, include
+# from django.views.generic import TemplateView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include({CREATE_APP}.urls)),   # app.urls
+    # path("extend/", TemplateView.as_view(template_name="extend.html")),
+]
 """
