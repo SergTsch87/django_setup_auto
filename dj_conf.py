@@ -48,7 +48,9 @@ def get_num_line_with_text():
     # utls.run_command(f'echo INSTALLED_APPS += \'bootstrap5,\' >> {cnst.PROJECT_NAME}/settings.py')
     # utls.write_content_to_file(f'{cnst.PROJECT_NAME}/settings.py', f'INSTALLED_APPS += [{cnst.CREATE_APP}, bootstrap5]')
     # num_temp = 0
-    with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
+    
+    # with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
+    with open(f'{cnst.BASE_DIR}/settings.py', 'r') as file:
         lines = file.readlines()
         for num_line, line in enumerate(lines, 1):
             if 'INSTALLED_APPS' in line:
@@ -58,7 +60,8 @@ def get_num_line_with_text():
 
 def write_text_by_num_line():
     num_line_text = get_num_line_with_text()
-    with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
+    # with open(f'{cnst.PROJECT_NAME}/settings.py', 'r') as file:
+    with open(f'{cnst.BASE_DIR}/settings.py', 'r') as file:
         lines = file.readlines()
 
     if num_line_text is not None:
