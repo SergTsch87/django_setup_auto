@@ -1,19 +1,6 @@
 import subprocess
 import sys
-# import platform
-# from  pathlib import Path
-
-
-# # ------------------------------------
-# # Old funcs:
-# def get_os():
-#     return platform.system()
-
-
-# def is_file(path: Path) -> bool:
-#     return path.is_file()
-# # --------------------------------------
-
+import content as cont
 
 # # ================= CMD, OS, GIT =====================
 def run_command(command, cwd=None):
@@ -33,10 +20,5 @@ def write_content_to_file(path_file, content, mode='a'):
 
 def write_to_gitignore():
     # Файл .gitignore — краще перевірити, чи рядки вже не існують, щоб уникнути дублювання.
-    content = """
-    *.txt
-    my_prj/
-    tutors_app/
-    """
     with open('.gitignore', 'a') as f:
-        f.write(content)
+        f.write(cont.CONTENT_TO_IGNORE)

@@ -1,32 +1,14 @@
 import os
-# import sys
-# import subprocess
 import constants as cnst
-# import utils as utls
+import content as cont
 import dj_conf as dj
 import template_setup as tmpl
 import views_setup as vw
 import urls_setup as urlstp
 
-# urlstp.create_urls_py_app_cbv
-# urlstp.append_to_urls_py_cbv
-
-# vw.append_to_cbv_py
-
-# tmpl.ensure_template_dir_created
-# tmpl.ensure_template_file_created
-
-# dj.ensure_django_admin_installed
-# dj.ensure_project_created
-# dj.install_django_and_bootstrap_in_venv
-# dj.ensure_venv_created
-# dj.ensure_app_created
-# dj.get_num_line_with_text
-# dj.write_text_by_num_line
-
 # ================= MAIN =====================
 def main():
-    os.makedirs(cnst.DIR_DJANGO, exist_ok=True)
+    os.makedirs(cnst.BASE_DIR, exist_ok=True)   # YES   # exist_ok=True  означає:  if not os.path.exists(path): os.makedirs(path)
     dj.ensure_django_admin_installed()   # Встановлює pipx та django
     dj.ensure_project_created()          # Створює Django-проєкт. Інакше - минає цей етап
     pip_path, python_path = dj.ensure_venv_created()  # Створює venv
@@ -39,14 +21,14 @@ def main():
     tmpl.ensure_template_dir_created()         # Створює Django-шаблон. Інакше - минає цей етап
     
     # Створює HTML-файли Django-шаблону зі шляхом path_file та вмістом content
-    tmpl.ensure_template_file_created(cnst.BASE_TEMPLATE_FILE, cnst.content_for_base_templ_file)
-    tmpl.ensure_template_file_created(cnst.EXTEND_TEMPLATE_FILE, cnst.content_for_extend_templ_file)
+    tmpl.ensure_template_file_created(cnst.BASE_TEMPLATE_FILE, cont.CONTENT_FOR_BASE_TEMPL_FILE)   # YES
+    tmpl.ensure_template_file_created(cnst.EXTEND_TEMPLATE_FILE, cont.CONTENT_FOR_EXTEND_TEMPL_FILE)   # YES
     
     vw.append_to_cbv_py()                    # Дописує CBV-функцію до view
     urlstp.append_to_urls_py_cbv()               # Дописує route до списку urlpatterns файлу prj/urls.py
     urlstp.create_urls_py_app_cbv()              # Створює app/urls.py з відповідним вмістом
 
-    # utls.write_to_gitignore()                  # Розкоментуй, коли тре буде пушити Django-проєкт
+    # utils.write_to_gitignore()                  # Розкоментуй, коли тре буде пушити Django-проєкт
 
 
 if __name__ == '__main__':
