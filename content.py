@@ -2,10 +2,10 @@
 import constants as cnst
 
 CONTENT_TO_IGNORE = """
-    *.txt
-    my_prj/
-    tutors_app/
-    """
+*.txt
+my_prj/
+tutors_app/
+"""
 
 CONTENT_TO_CBV_PY = f"""
 # with templates
@@ -90,7 +90,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include({cnst.CREATE_APP}.urls)),   # app.urls                  # YES
+    path('', include({cnst.CREATE_APP}.urls)),   # app.urls
     # path("extend/", TemplateView.as_view(template_name="extend.html")),
 ]
 """
